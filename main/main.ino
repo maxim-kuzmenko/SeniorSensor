@@ -2,7 +2,6 @@
 #include "MMA7660.h"
 MMA7660 accelemeter;
 const int buttonPin = 2;
-const int accelPin = 7;
 int buttonState = 0;
 
 void setup() {
@@ -28,12 +27,12 @@ void loop() {
   int8_t y;
   int8_t z;
   float ax,ay,az;
-  accelemeter.getXYZ(&x,&y,&z);
+  accelemeter.getAcceleration(&ax,&ay,&az);
   
   Serial.print("x-coordinate : ");
-    Serial.println(x); 
+    Serial.println(ax); 
     Serial.print("y-coord : ");
-    Serial.println(y);   
+    Serial.println(ay);   
     Serial.print("z-coord : ");
-    Serial.println(z);
+    Serial.println(az);
 }
