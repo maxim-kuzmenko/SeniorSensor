@@ -3,6 +3,8 @@
 MMA7660 accelemeter;
 const int buttonPin = 2;
 int buttonState = 0;
+int isActive = 0;
+int isReadingButtonValue = 1;
 
 void setup() {
   // put your setup code here, to run once:
@@ -17,8 +19,19 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   buttonState = digitalRead(buttonPin);
-  Serial.print(buttonState);
   if (buttonState == HIGH) {
+    if (isReadingButtonValue == 1) {
+      isReadingButtonValue = 0;
+      if (isActive == 1) {
+        isActive == 0;
+      } else {
+        isActive == 1;
+      }
+    }
+  } else {
+    isReadingButtonValue = 1;
+  }
+  if (isActive == HIGH) {
     digitalWrite(LED_BUILTIN, HIGH);
   } else {
     digitalWrite(LED_BUILTIN, LOW);
@@ -29,10 +42,8 @@ void loop() {
   float ax,ay,az;
   accelemeter.getAcceleration(&ax,&ay,&az);
   
-  Serial.print("x-coordinate : ");
-    Serial.println(ax); 
-    Serial.print("y-coord : ");
-    Serial.println(ay);   
-    Serial.print("z-coord : ");
+  Serial.println(ax);
+    Serial.println(ay);
     Serial.println(az);
+    delay(500);
 }
