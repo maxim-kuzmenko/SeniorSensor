@@ -7,6 +7,8 @@ int isActive = 0;
 int isReadingButtonValue = 1;
 int delayCounter = 0;
 int delayValue = 500;
+int8_t x, y, z;
+float ax,ay,az;
 
 void setup() {
   // put your setup code here, to run once:
@@ -25,11 +27,9 @@ void loop() {
     if (isReadingButtonValue == 1) {
       isReadingButtonValue = 0;
       if (isActive == 1) {
-        Serial.println("SeniorSensor is now INACTIVE.");
         isActive = 0;
       } else {
         isActive = 1;
-        Serial.println("SeniorSensor is now ACTIVE.");
       }
     }
   } else {
@@ -39,27 +39,31 @@ void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
     delayCounter = (delayCounter + 1) % delayValue;
     if (delayCounter == 0) {
-      int8_t x, y, z;
-      float ax,ay,az;
       accelemeter.getXYZ(&x,&y,&z);
       accelemeter.getAcceleration(&ax, &ay, &az);
       
       printPrepare();
-      
       printKeyValuePairInt("isActive", isActive, false);
-      printKeyValuePairInt("xCoord", x, false);
-      printKeyValuePairInt("yCoord", y, false);
-      printKeyValuePairInt("zCoord", z, false);
-      printKeyValuePairFloat("xAccel", ax, false);
-      printKeyValuePairFloat("yAccel", ay, false);
-      printKeyValuePairFloat("zAccel", az, true);
-      
+      printCoordinateData();
+      printAccelerationData();
       printComplete();
     }
   } else {
     digitalWrite(LED_BUILTIN, LOW);
   }
   delay(1);
+}
+
+void printCoordinateData() {
+  printKeyValuePairInt("xCoord", x, false);
+  printKeyValuePairInt("yCoord", y, false);
+  printKeyValuePairInt("zCoord", z, false);
+}
+
+void printAccelerationData() {
+  printKeyValuePairFloat("xAccel", ax, false);
+  printKeyValuePairFloat("yAccel", ay, false);
+  printKeyValuePairFloat("zAccel", az, true);
 }
 
 void printPrepare() {
@@ -71,7 +75,9 @@ void printComplete() {
 }
 
 void printKeyValuePairInt(const char* key, int8_t value, bool last) {
+  Serial.print("\"");
   Serial.print(key);
+  Serial.print("\"");
   Serial.print(": ");
   Serial.print(value);
   if (!last) {
@@ -80,7 +86,9 @@ void printKeyValuePairInt(const char* key, int8_t value, bool last) {
 }
 
 void printKeyValuePairFloat(const char* key, float value, bool last) {
+  Serial.print("\"");
   Serial.print(key);
+  Serial.print("\"");
   Serial.print(": ");
   Serial.print(value);
   if (!last) {
