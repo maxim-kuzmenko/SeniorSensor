@@ -66,9 +66,9 @@ function analyzeData(data) {
             console.log(avgAccelQuarter[i]);
         }
         console.log("Checking thresholds");
-        if (avgAccelQuarter[0] > accelThreshold 
-            && avgAccelQuarter[1] < accelThreshold 
-            && avgAccelQuarter[2] < accelThreshold 
+        if (avgAccelQuarter[0] > accelThreshold
+            && avgAccelQuarter[1] < accelThreshold
+            && avgAccelQuarter[2] < accelThreshold
             && avgAccelQuarter[3] < accelThreshold) {
                 console.log("1 0 0 0");
                 if (walking) {
@@ -77,7 +77,8 @@ function analyzeData(data) {
                 } else {
                     //Check for sound first
                     console.log("Fall!");
-                    process.exit(); //Replace this with the twilio alert
+                    handleTwilio();
+                    //process.exit(); //Replace this with the twilio alert
                 }
         } else {
             console.log("? ? ? ?");
@@ -122,7 +123,7 @@ function analyze(data) {
 }
 
 function analyzeFall(sound, avgAccel) {
-    
+
 }
 
 function handleTwilio() {
@@ -131,7 +132,7 @@ function handleTwilio() {
     const authToken = process.env.TOKEN; //'7a52286c05bac629ca5001c62315fb37';
     client.messages
         .create({
-            to: '+15877071849',
+            to: '+16133015513',
             from: '+15873175479',
             body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
         })
