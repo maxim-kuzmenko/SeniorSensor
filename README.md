@@ -4,6 +4,8 @@ Senior Sensor is a notification device that let's you or a caretaker know the st
 ## Demo
 [![Senior_Demo](https://img.youtube.com/vi/_DlMi-knl4Q/0.jpg)](https://www.youtube.com/watch?v=_DlMi-knl4Q)
 
+Click frame to play 😊
+
 ## How it works
 Currently, the Senior Sensor as proof of concept will send two types of SMS notifications to a caretaker depending on movement by the elderly individual.
 
