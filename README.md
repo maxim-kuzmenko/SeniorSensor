@@ -1,6 +1,9 @@
 ## The Concept
 Senior Sensor is a notification device that let's you or a caretaker know the status an elderly individual with the use of SMS notifications. The sensor will be located on the wrist of the individual in care and detect any sudden movements or sound coming from the individual. In the case where these actions may be harmful or possess danger to the senior, you or their caretaker will be notified by text and given a quick report of the severity or situation. 
 
+## Demo
+[![Senior_Demo](https://img.youtube.com/vi/_DlMi-knl4Q/0.jpg)](https://www.youtube.com/watch?v=_DlMi-knl4Q)
+
 ## How it works
 Currently, the Senior Sensor as proof of concept will send two types of SMS notifications to a caretaker depending on movement by the elderly individual.
 
