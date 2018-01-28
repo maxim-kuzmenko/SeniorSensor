@@ -2,13 +2,15 @@
 #include "MMA7660.h"
 MMA7660 accelemeter;
 const int buttonPin = 2;
+const int pinAdc = A0;
 int buttonState = 0;
 int isActive = 0;
 int isReadingButtonValue = 1;
 int delayCounter = 0;
-int delayValue = 500;
+int delayValue = 1;
 int8_t x, y, z;
 float ax,ay,az;
+long soundSum;
 
 void setup() {
   // put your setup code here, to run once:
@@ -39,11 +41,19 @@ void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
     delayCounter = (delayCounter + 1) % delayValue;
     if (delayCounter == 0) {
+      
+      soundSum = 0;
+      for (int i = 0; i < 32; i++) {
+          soundSum += analogRead(pinAdc);
+      }
+      soundSum >>= 5;
+      
       accelemeter.getXYZ(&x,&y,&z);
       accelemeter.getAcceleration(&ax, &ay, &az);
       
       printPrepare();
       printKeyValuePairInt("isActive", isActive, false);
+      printKeyValuePairLong("sound", soundSum, false);
       printCoordinateData();
       printAccelerationData();
       printComplete();
@@ -75,6 +85,17 @@ void printComplete() {
 }
 
 void printKeyValuePairInt(const char* key, int8_t value, bool last) {
+  Serial.print("\"");
+  Serial.print(key);
+  Serial.print("\"");
+  Serial.print(": ");
+  Serial.print(value);
+  if (!last) {
+    Serial.print(", ");
+  }
+}
+
+void printKeyValuePairLong(const char* key, long value, bool last) {
   Serial.print("\"");
   Serial.print(key);
   Serial.print("\"");
