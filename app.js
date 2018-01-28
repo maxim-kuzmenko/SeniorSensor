@@ -2,6 +2,8 @@ const request = require('request');
 const SerialPort = require("serialport");
 const arduinoPort = new SerialPort("/dev/cu.usbmodem1421");
 
+var soundArray = [];
+
 arduinoPort.on('open', function () {
     console.log('Serial Port Opened');
     var dataString = "";
@@ -20,12 +22,42 @@ function parseData(data) {
     // read individual variables
     try {
         var output = JSON.parse(data);
+        output.amplitude = analyzeAmplitude(output.sound);
+        console.log(output);
+        analyze(output);
     } catch (ex) {
-        console.log(ex);
+        console.log("Failed to parse JSON...");
     }
-    // change positions to Tilt-sensing
-    console.log(output);
-    // alert text if position changes
+}
+
+function analyzeAmplitude(sound) {
+    soundArray.push(sound);
+    if (soundArray.length > 50) {
+        soundArray.shift();
+    }
+    var amplitude = {"high": null, "low": null};
+    for (i in soundArray) {
+        if (amplitude.high == null) {
+            amplitude.high = soundArray[i];
+        } else if (soundArray[i] > amplitude.high) {
+            amplitude.high = soundArray[i];
+        }
+        if (amplitude.low == null) {
+            amplitude.low = soundArray[i];
+        } else if (soundArray[i] < amplitude.low) {
+            amplitude.low = soundArray[i];
+        }
+    }
+    amplitude.differential = amplitude.high - amplitude.low;
+    return amplitude;
+}
+
+function analyze(data) {
+    analyzeFall(data.amplitude, data.zCoord, data.zAccel);
+}
+
+function analyzeFall(amplitude, zCoord, zAccel) {
+    
 }
 
 function handleTwilio() {
@@ -46,7 +78,7 @@ function handleTwilio() {
 }
 
 function ping() {
-    request('http://seniorsensor.tech', function (error, response, body) {
+    request('http://seniorsensors.herokuapp.com', function (error, response, body) {
         console.log('Pinged to keep dyno awake');
     });
 }

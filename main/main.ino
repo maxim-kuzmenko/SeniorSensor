@@ -52,7 +52,6 @@ void loop() {
       accelemeter.getAcceleration(&ax, &ay, &az);
       
       printPrepare();
-      printKeyValuePairInt("isActive", isActive, false);
       printKeyValuePairLong("sound", soundSum, false);
       printCoordinateData();
       printAccelerationData();
