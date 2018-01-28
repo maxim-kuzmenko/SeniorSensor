@@ -24,8 +24,8 @@ function parseData(data) {
 
 function handleTwilio(){
 	// Twilio Credentials
-	const accountSid = 'AC610a13bdb4e66808beace23a61c6d0d4';
-	const authToken = '7a52286c05bac629ca5001c62315fb37';
+	const accountSid = process.env.API_KEY; //'AC610a13bdb4e66808beace23a61c6d0d4';
+	const authToken = process.env.TOKEN; //'7a52286c05bac629ca5001c62315fb37';
 
 	// require the Twilio module and create a REST client
 	const client = require('twilio')(accountSid, authToken);
