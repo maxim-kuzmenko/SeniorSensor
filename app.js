@@ -23,6 +23,7 @@ function parseData(data) {
     try {
         var output = JSON.parse(data);
         output.sound = analyzeAmplitude(output.sound);
+        output.avgAccel = Math.sqrt(Math.pow(output.xAccel, 2) + Math.pow(output.yAccel, 2) + Math.pow(output.zAccel, 2));
         console.log(output);
         analyze(output);
     } catch (ex) {
@@ -53,10 +54,10 @@ function analyzeAmplitude(sound) {
 }
 
 function analyze(data) {
-    analyzeFall(data.sound, data.zCoord, data.zAccel);
+    analyzeFall(data.sound, data.avgAccel);
 }
 
-function analyzeFall(sound, zCoord, zAccel) {
+function analyzeFall(sound, avgAccel) {
 
 }
 
