@@ -41,16 +41,16 @@ void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
     delayCounter = (delayCounter + 1) % delayValue;
     if (delayCounter == 0) {
-
+      
       soundSum = 0;
       for (int i = 0; i < 32; i++) {
           soundSum += analogRead(pinAdc);
       }
       soundSum >>= 5;
-
+      
       accelemeter.getXYZ(&x,&y,&z);
       accelemeter.getAcceleration(&ax, &ay, &az);
-
+      
       printPrepare();
       printKeyValuePairLong("sound", soundSum, false);
       printCoordinateData();

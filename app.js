@@ -160,8 +160,8 @@ function analyzeAmplitude(sound) {
 
 function handleTwilio(messageType) {
     // Twilio Credentials
-    const accountSid = /*process.env.API_KEY;*/ 'AC5e88808feca3beef0e331025d9145e3c';
-    const authToken = /*process.env.TOKEN;*/ '4170d65f65f4d4cb0848ac00daba6f14';
+    const accountSid = /*process.env.API_KEY;*/ /*'AC5e88808feca3beef0e331025d9145e3c'*/ 'AC610a13bdb4e66808beace23a61c6d0d4';
+    const authToken = /*process.env.TOKEN;*/ /*'4170d65f65f4d4cb0848ac00daba6f14'*/ '7a52286c05bac629ca5001c62315fb37';
     var client = new twilio(accountSid, authToken);
 
     var messageBody = "";
@@ -181,8 +181,8 @@ function handleTwilio(messageType) {
 
     client.messages
         .create({
-            to: '+16133015513',
-            from: '+16138006802',
+            to: '+15877071849',
+            from: '+15873175479',
             body: messageBody,
         })
         .then(message => console.log(message.sid));
