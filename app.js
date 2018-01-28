@@ -1,9 +1,45 @@
-const SerialPort = require("serialport");
 const request = require('request');
 const express = require('express');
-const arduinoPort = new SerialPort("/dev/cu.usbmodem1421");
 const app = express();
 const ROOT = "./public";
+
+app.set('port', (process.env.PORT || 5000));
+
+app.use(function (req, res, next) {
+	console.log(req.method + " request for " + req.url);
+	next();
+});
+
+app.get(['/', '/index.html', '/index'], function (req, res) {
+	res.sendFile('index.html', {
+		root: ROOT
+	});
+});
+
+app.use(express.static(ROOT));
+
+app.all("*", function (req, res) {
+	res.status(404);
+	res.render('404');
+})
+
+app.listen(app.get('port'), function () {
+	console.log('Server listening on port', app.get('port'));
+	ping();
+	setInterval(() => {
+		ping();
+	}, 1500000);
+});
+
+function ping() {
+	request('http://seniorsensor.tech', function (error, response, body) {
+		console.log('Pinged to keep dyno awake');
+	});
+}
+
+const SerialPort = require("serialport");
+const arduinoPort = new SerialPort("/dev/cu.usbmodem1421");
+
 arduinoPort.on('open', function () {
     console.log('Serial Port Opened');
     var dataString = "";
@@ -46,37 +82,3 @@ function handleTwilio(){
 	  })
 	  .then(message => console.log(message.sid));
 }
-
-function ping() {
-	request('http://seniorsensor.tech', function (error, response, body) {
-		console.log('Pinged to keep dyno awake');
-	});
-}
-
-app.set('port', (process.env.PORT || 5000));
-
-app.use(function (req, res, next) {
-	console.log(req.method + " request for " + req.url);
-	next();
-});
-
-app.get(['/', '/index.html', '/index'], function (req, res) {
-	res.sendFile('index.html', {
-		root: ROOT
-	});
-});
-
-app.use(express.static(ROOT));
-
-app.all("*", function (req, res) {
-	res.status(404);
-	res.render('404');
-})
-
-app.listen(app.get('port'), function () {
-	console.log('Server listening on port', app.get('port'));
-	ping();
-	setInterval(() => {
-		ping();
-	}, 1500000);
-});
