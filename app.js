@@ -60,27 +60,24 @@ function analyzeFall(amplitude, zCoord, zAccel) {
     
 }
 
-function handleTwilio() {
-    // Twilio Credentials
-    const accountSid = 'AC610a13bdb4e66808beace23a61c6d0d4';
-    const authToken = '7a52286c05bac629ca5001c62315fb37';
-
-    // require the Twilio module and create a REST client
-    const client = require('twilio')(accountSid, authToken);
-
-    client.messages
-        .create({
-            to: '+15877071849',
-            from: '+15017122661',
-            body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
-        })
-        .then(message => console.log(message.sid));
-}
+function handleTwilio(){
+	// Twilio Credentials
+	const accountSid = process.env.API_KEY; //'AC610a13bdb4e66808beace23a61c6d0d4';
+	const authToken = process.env.TOKEN; //'7a52286c05bac629ca5001c62315fb37';
 
 function ping() {
     request('http://seniorsensors.herokuapp.com', function (error, response, body) {
         console.log('Pinged to keep dyno awake');
     });
+}
+
+	client.messages
+	  .create({
+	    to: '+15877071849',
+	    from: '+15017122661',
+	    body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
+	  })
+	  .then(message => console.log(message.sid));
 }
 
 ping();
