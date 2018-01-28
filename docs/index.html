@@ -182,7 +182,7 @@
 <script src="./assets/js/scrolling-nav.js"></script>
 <script src="./assets/js/plugins.js"></script>
 <script src="./assets/js/main.js"></script>
-
+<script src="https://unpkg.com/scrollreveal/dist/scrollreveal.min.js"></script>
 <script src="./assets/js/showHide.js"></script>
 
 <script type="text/javascript">
@@ -209,7 +209,11 @@ $(document).ready(function(){
             delay: 10,
             time: 1000
         });
-    });
+		});
+		
+		window.sr = ScrollReveal();
+		sr.reveal('#main_menu_sec');
+		sr.reveal('#abt_sec');
 </script>
 
 <script>
