@@ -22,7 +22,7 @@ function parseData(data) {
     // read individual variables
     try {
         var output = JSON.parse(data);
-        output.amplitude = analyzeAmplitude(output.sound);
+        output.sound = analyzeAmplitude(output.sound);
         console.log(output);
         analyze(output);
     } catch (ex) {
@@ -35,28 +35,28 @@ function analyzeAmplitude(sound) {
     if (soundArray.length > 50) {
         soundArray.shift();
     }
-    var amplitude = { "high": null, "low": null };
+    sound = { "high": null, "low": null };
     for (i in soundArray) {
-        if (amplitude.high == null) {
-            amplitude.high = soundArray[i];
-        } else if (soundArray[i] > amplitude.high) {
-            amplitude.high = soundArray[i];
+        if (sound.high == null) {
+            sound.high = soundArray[i];
+        } else if (soundArray[i] > sound.high) {
+            sound.high = soundArray[i];
         }
-        if (amplitude.low == null) {
-            amplitude.low = soundArray[i];
-        } else if (soundArray[i] < amplitude.low) {
-            amplitude.low = soundArray[i];
+        if (sound.low == null) {
+            sound.low = soundArray[i];
+        } else if (soundArray[i] < sound.low) {
+            sound.low = soundArray[i];
         }
     }
-    amplitude.differential = amplitude.high - amplitude.low;
-    return amplitude;
+    sound.amplitude = sound.high - sound.low;
+    return sound;
 }
 
 function analyze(data) {
-    analyzeFall(data.amplitude, data.zCoord, data.zAccel);
+    analyzeFall(data.sound, data.zCoord, data.zAccel);
 }
 
-function analyzeFall(amplitude, zCoord, zAccel) {
+function analyzeFall(sound, zCoord, zAccel) {
 
 }
 
