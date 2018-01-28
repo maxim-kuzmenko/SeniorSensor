@@ -1,13 +1,13 @@
 const SerialPort = require("serialport");
 const request = require('request');
 const express = require('express');
-const port = new SerialPort("/dev/cu.usbmodem1421");
+const arduinoPort = new SerialPort("/dev/cu.usbmodem1421");
 const app = express();
 const ROOT = "./public";
-port.on('open', function () {
+arduinoPort.on('open', function () {
     console.log('Serial Port Opened');
     var dataString = "";
-    port.on('data', function (data) {
+    arduinoPort.on('data', function (data) {
         dataString += data.toString('utf8');
         if (dataString.includes("}")) {
             parseData(dataString);
