@@ -1,13 +1,15 @@
 const request = require('request');
 const SerialPort = require("serialport");
 const arduinoPort = new SerialPort("/dev/cu.usbmodem1421");
+const twilio = require('twilio');
 
 var soundArray = [];
 var accelArray = [];
 var arrayLength = 500;
-var accelThreshold = 1.5;
+var accelThreshold = 1.2;
 var walking = false;
-var count = 0;
+var twilioMessageLimiter = 0;
+var twilioMessageLimiterUpperLimit = 2000;
 
 arduinoPort.on('open', function () {
     console.log('Serial Port Opened');
@@ -30,9 +32,11 @@ function parseData(data) {
         output.sound = analyzeAmplitude(output.sound);
         output.avgAccel = Math.sqrt(Math.pow(output.xAccel, 2) + Math.pow(output.yAccel, 2) + Math.pow(output.zAccel, 2));
         console.log(output);
-        console.log("Count: " + count);
         console.log("Walking: " + walking);
-        count++;
+        if (twilioMessageLimiter > 0) {
+            twilioMessageLimiter--;
+            console.log("Twilio message limiter: " + twilioMessageLimiter);
+        }
         analyzeData(output);
     } catch (ex) {
         console.log("Failed to parse JSON...");
@@ -41,6 +45,7 @@ function parseData(data) {
 
 function analyzeData(data) {
     var accel = data.avgAccel;
+    var amplitude = data.sound.amplitude;
     accelArray.push(accel);
     if (accelArray.length > arrayLength) {
         accelArray.shift();
@@ -59,7 +64,6 @@ function analyzeData(data) {
             } else {
                 avgAccelQuarter[3] += accelArray[i];
             }
-            // avgAccelQuarter[i / (accelArray.length / 4.0)] += accelArray[i];
         }
         for (i in avgAccelQuarter) {
             avgAccelQuarter[i] /= (arrayLength / 4.0);
@@ -70,18 +74,23 @@ function analyzeData(data) {
             && avgAccelQuarter[1] < accelThreshold
             && avgAccelQuarter[2] < accelThreshold
             && avgAccelQuarter[3] < accelThreshold) {
-                console.log("1 0 0 0");
                 if (walking) {
                     walking = false;
                     accelArray = [];
                 } else {
-                    //Check for sound first
-                    console.log("Fall!");
-                    handleTwilio();
-                    //process.exit(); //Replace this with the twilio alert
+                    // if (amplitude > 700) {
+                        if (twilioMessageLimiter > 0) {
+                            console.log("Sent fall message. Limiter: " + twilioMessageLimiter);
+                        } else {
+                            handleTwilio(0);
+                            console.log("Sent twilio fall message");
+                            twilioMessageLimiter = twilioMessageLimiterUpperLimit;
+                        }
+                    // } else {
+                    //     console.log("Didn't sent fall message due to lack of noise");
+                    // }
                 }
         } else {
-            console.log("? ? ? ?");
             var numQuartersAboveThreshold = 0;
             for (i in avgAccelQuarter) {
                 if (avgAccelQuarter[i] > accelThreshold) {
@@ -91,6 +100,13 @@ function analyzeData(data) {
             }
             if (numQuartersAboveThreshold > 2) {
                 walking = true;
+                if (twilioMessageLimiter > 0) {
+                    console.log("Sent walking message. Limiter: " + twilioMessageLimiter);
+                } else {
+                    handleTwilio(1);
+                    console.log("Sent twilio walking message");
+                    twilioMessageLimiter = twilioMessageLimiterUpperLimit;
+                }
             }
         }
     }
@@ -118,23 +134,32 @@ function analyzeAmplitude(sound) {
     return sound;
 }
 
-function analyze(data) {
-    analyzeFall(data.sound, data.avgAccel);
-}
-
-function analyzeFall(sound, avgAccel) {
-
-}
-
-function handleTwilio() {
+function handleTwilio(messageType) {
     // Twilio Credentials
-    const accountSid = process.env.API_KEY; //'AC610a13bdb4e66808beace23a61c6d0d4';
-    const authToken = process.env.TOKEN; //'7a52286c05bac629ca5001c62315fb37';
+    const accountSid = /*process.env.API_KEY;*/ 'AC5e88808feca3beef0e331025d9145e3c';
+    const authToken = /*process.env.TOKEN;*/ '4170d65f65f4d4cb0848ac00daba6f14';
+    var client = new twilio(accountSid, authToken);
+
+    var messageBody = "";
+    switch (messageType) {
+        case 0:
+            messageBody = "Sudden fall detected for our elderly patient.";
+            break;
+        case 1:
+            messageBody = "Our elderly patient is on the move.";
+            break;
+        case 2:
+            messageBody = "Our elderly patient has not moved significantly for the past x hours";
+            break;
+        default:
+            return;
+    }
+
     client.messages
         .create({
             to: '+16133015513',
-            from: '+15873175479',
-            body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
+            from: '+16138006802',
+            body: messageBody,
         })
         .then(message => console.log(message.sid));
 }

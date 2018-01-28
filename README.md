@@ -10,7 +10,7 @@ In this situation, if the device experiences a sudden drop in height over the co
 Case 2: "Our elderly patient is on the move."
 Certain elderly individuals may need to remain in bed unless supervised by a caretaker and if they were to leave unsupervised they can cause great harm to themselves. These situations can arise if a patient has a condition such as dementia or a condition where they may try to roam around when they need to stay in bed. Notifying the caretaker immediately is key to prevent harm from coming to the elderly individual.
 
-Case 3: "Our elderly patient has not moved significantly for the past x hours"
+Case 3 (potential future case): "Our elderly patient has not moved significantly for the past x hours"
 There is also the case where our elderly individual will need to move around after prolonged periods of inactivity for conditions that may require a small amount of healthy exercise. This notification will remind the caretaker to check up on the elderly when necessary.  
 
 ## Technical Details
