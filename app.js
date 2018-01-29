@@ -2,6 +2,7 @@ const request = require('request');
 const SerialPort = require("serialport");
 const arduinoPort = new SerialPort("/dev/cu.usbmodem1421");
 const twilio = require('twilio');
+require('dotenv').config();
 
 var soundArray = [];
 var accelArray = [];
@@ -136,8 +137,8 @@ function analyzeAmplitude(sound) {
 
 function handleTwilio(messageType) {
     // Twilio Credentials
-    const accountSid = /*process.env.API_KEY;*/ 'AC5e88808feca3beef0e331025d9145e3c';
-    const authToken = /*process.env.TOKEN;*/ '4170d65f65f4d4cb0848ac00daba6f14';
+    const accountSid = process.env.API_KEY;
+    const authToken = process.env.TOKEN;
     var client = new twilio(accountSid, authToken);
 
     var messageBody = "";
