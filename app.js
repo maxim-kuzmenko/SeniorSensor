@@ -6,8 +6,10 @@ require('dotenv').config();
 
 var soundArray = [];
 var accelArray = [];
+var longAccelArray = [];
 var arrayLength = 500;
 var accelThreshold = 1.2;
+var fallAccelThreshold = 1.5;
 var walking = false;
 var twilioMessageLimiter = 0;
 var twilioMessageLimiterUpperLimit = 2000;
@@ -52,6 +54,11 @@ function analyzeData(data) {
         accelArray.shift();
     }
 
+    longAccelArray.push(accel);
+    if (longAccelArray.length > arrayLength * 6) {
+        longAccelArray.shift();
+    }
+
     if (accelArray.length >= arrayLength) {
         console.log("Sufficient data");
         var avgAccelQuarter = [0, 0, 0, 0];
@@ -71,17 +78,17 @@ function analyzeData(data) {
             console.log(avgAccelQuarter[i]);
         }
         console.log("Checking thresholds");
-        if (avgAccelQuarter[0] > accelThreshold
-            && avgAccelQuarter[1] < accelThreshold
-            && avgAccelQuarter[2] < accelThreshold
-            && avgAccelQuarter[3] < accelThreshold) {
+        if (avgAccelQuarter[0] > fallAccelThreshold
+            && avgAccelQuarter[1] < fallAccelThreshold
+            && avgAccelQuarter[2] < fallAccelThreshold
+            && avgAccelQuarter[3] < fallAccelThreshold) {
                 if (walking) {
                     walking = false;
                     accelArray = [];
                 } else {
                     // if (amplitude > 700) {
                         if (twilioMessageLimiter > 0) {
-                            console.log("Sent fall message. Limiter: " + twilioMessageLimiter);
+                            console.log("Sent twilio fall message. Limiter: " + twilioMessageLimiter);
                         } else {
                             handleTwilio(0);
                             console.log("Sent twilio fall message");
@@ -102,12 +109,29 @@ function analyzeData(data) {
             if (numQuartersAboveThreshold > 2) {
                 walking = true;
                 if (twilioMessageLimiter > 0) {
-                    console.log("Sent walking message. Limiter: " + twilioMessageLimiter);
+                    console.log("Sent twilio walking message. Limiter: " + twilioMessageLimiter);
                 } else {
                     handleTwilio(1);
                     console.log("Sent twilio walking message");
                     twilioMessageLimiter = twilioMessageLimiterUpperLimit;
                 }
+            }
+        }
+    }
+    if (longAccelArray.length >= arrayLength * 6) {
+        var moved = false;
+        for (i in longAccelArray) {
+            if (longAccelArray[i] > accelThreshold) {
+                moved = true;
+            }
+        }
+        if (!moved) {
+            if (twilioMessageLimiter > 0) {
+                console.log("Sent twilio inactive message. Limiter: " + twilioMessageLimiter);
+            } else {
+                handleTwilio(2);
+                console.log("Sent twilio inactive message");
+                twilioMessageLimiter = twilioMessageLimiterUpperLimit;
             }
         }
     }
@@ -150,7 +174,7 @@ function handleTwilio(messageType) {
             messageBody = "Our elderly patient is on the move.";
             break;
         case 2:
-            messageBody = "Our elderly patient has not moved significantly for the past x hours";
+            messageBody = "Our elderly patient has not moved significantly for the past 8 hours";
             break;
         default:
             return;
@@ -158,8 +182,8 @@ function handleTwilio(messageType) {
 
     client.messages
         .create({
-            to: '+16133015513',
-            from: '+16138006802',
+            to: '+15877071849',
+            from: '+15873175479',
             body: messageBody,
         })
         .then(message => console.log(message.sid));
